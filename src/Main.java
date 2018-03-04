@@ -4,17 +4,10 @@ import java.util.Scanner;
 
 public class Main {
 
-
+    public static int tries = 0;
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        showBanner();
-        showInputs();
-        String key = scanner.nextLine();
-
-        if(key.equals("S")) {
-            showATM(scanner);
-        }
-
+        startATM(scanner);
     }
 
     static void showBanner() {
@@ -30,14 +23,40 @@ public class Main {
     static void showATM(Scanner scanner) {
         showBanner();
         System.out.println("Enter your pin number");
-        int pin = scanner.nextInt();
-        Account account = Account.getAccount(pin);
-        if(account == null) {
-            System.out.println("Account not found");
-            return;
+        try {
+            int pin = Integer.parseInt(scanner.nextLine());
+            Account account = Account.getAccount(pin);
+            if (tries > 3) {
+                System.out.println("CAPTURED CARD…. PLEASE CALL 143-44");
+                System.exit(0);
+                return;
+            }
+            if (account == null) {
+                tries++;
+                System.out.println("Account not found");
+                System.out.println(tries);
+                showATM(scanner);
+                return;
+            }
+
+            System.out.println(account.getName());
+            System.out.println(account.getBalance());
+            System.out.println(account.getNumber());
+
+        } catch (Exception exception) {
+
         }
-        System.out.println(account.getName());
-        System.out.println(account.getBalance());
-        System.out.println(account.getNumber());
+        startATM(scanner);
+    }
+
+    static void startATM(Scanner scanner) {
+        String key = scanner.nextLine();
+        while(!key.equals("Q")) {
+            if (key.equals("S")) {
+                showATM(scanner);
+            }
+            key = scanner.nextLine();
+        }
+        System.exit(0);
     }
 }
